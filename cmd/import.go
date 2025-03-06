@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/frasmataz/go-pokemon-db/controllers"
 	"github.com/frasmataz/go-pokemon-db/models"
@@ -31,6 +32,13 @@ func main() {
 		}
 	} else {
 		log.Println("Pokemon data already checked out.")
+	}
+
+	// The yaml from pokemonDB contains some unexpected dashes as values, which trips up golang's yaml parsing, so we replace them
+	// Sometimes bash is just easier
+	stdout, err := exec.Command("sed", "-i", "-e", "s/type2: -/type2:/g", "data/data/pokemon-forms.yaml").Output()
+	if err != nil {
+		log.Fatalf("Error post-processing yaml data: %v, %v", err, stdout)
 	}
 
 	// Load data from yaml

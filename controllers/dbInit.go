@@ -7,33 +7,33 @@ import (
 
 func CreateTables(db *sql.DB) {
 	sqlStmt := `
-	CREATE TABLE pokemon (
-		id INTEGER NOT NULL PRIMARY KEY,
-		name TEXT,
-		generation INTEGER
+	CREATE TABLE IF NOT EXISTS pokemon (
+		id			INTEGER NOT NULL PRIMARY KEY,
+		name		TEXT,
+		generation	INTEGER
 	);
-	CREATE TABLE stats (
-		id INTEGER NOT NULL PRIMARY KEY,
-		hp INTEGER,
-		attack INTEGER,
-		defence INTEGER,
-		special_attack INTEGER,
+	CREATE TABLE IF NOT EXISTS stats (
+		id				INTEGER NOT NULL PRIMARY KEY,
+		hp				INTEGER,
+		attack			INTEGER,
+		defence			INTEGER,
+		special_attack	INTEGER,
 		special_defence INTEGER
 	);
-	CREATE TABLE ev_yield (
-		id INTEGER NOT NULL PRIMARY KEY,
-		hp INTEGER,
-		attack INTEGER,
-		defence INTEGER,
-		special_attack INTEGER,
+	CREATE TABLE IF NOT EXISTS ev_yield (
+		id				INTEGER NOT NULL PRIMARY KEY,
+		hp				INTEGER,
+		attack			INTEGER,
+		defence			INTEGER,
+		special_attack	INTEGER,
 		special_defence INTEGER
 	);
-	CREATE TABLE pokemon_forms (
+	CREATE TABLE IF NOT EXISTS pokemon_forms (
 		name		TEXT NOT NULL PRIMARY KEY,
 		release		TEXT,
 		type1		TEXT,
 		type2		TEXT,
-		FOREIGN KEY(stats) REFERENCES stats(id),
+		stats_id	INTEGER,
 		species		TEXT,
 		height		INTEGER,
 		weight		INTEGER,
@@ -43,7 +43,9 @@ func CreateTables(db *sql.DB) {
 		egg_cycles	INTEGER,
 		friendship	TEXT,
 		growth_rate TEXT,
-		FOREIGN KEY(ev_yield) REFERENCES ev_yield(id)
+		ev_yield_id	INTEGER,
+		FOREIGN KEY (stats_id) REFERENCES stats (id),
+		FOREIGN KEY (ev_yield_id) REFERENCES ev_yield (id)
 	);
 	`
 	_, err := db.Exec(sqlStmt)
