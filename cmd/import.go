@@ -42,7 +42,7 @@ func main() {
 	}
 
 	// Load data from yaml
-	_ = loadDataFile[map[string]models.Pokemon]("data/data/pokemon.yaml")
+	pokemen := loadDataFile[map[string]models.Pokemon]("data/data/pokemon.yaml")
 	_ = loadDataFile[map[string]models.PokemonForms]("data/data/pokemon-forms.yaml")
 
 	// Open DB
@@ -52,7 +52,15 @@ func main() {
 	}
 	defer db.Close()
 
-	controllers.CreateTables(db)
+	// Create tables
+	controllers.CreatePokemonTable(db)
+	controllers.CreatePokemonFormsTable(db)
+	controllers.CreateStatsTable(db)
+
+	// Load data
+	for _, pokemon := range pokemen {
+		controllers.SavePokemon(db, pokemon)
+	}
 }
 
 func loadDataFile[T any](path string) (out T) {
